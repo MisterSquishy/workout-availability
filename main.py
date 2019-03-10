@@ -7,16 +7,18 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import NoSuchElementException
 from bs4 import BeautifulSoup, SoupStrainer
 from collections import deque
+import csv
 
 STUDIO_BASE_URL = 'https://www.soul-cycle.com/find-a-class/studio/'
 links_to_visit = deque([])
+csv_writer_lock = threading.Lock()
 
 class Link:
   def __init__(self, url, date_string):
     self.url = url
     self.date_string = date_string
 
-def main(driver, base_url, location):
+def main(driver, base_url, location, csv_writer):
   driver.set_page_load_timeout(10)
   login(driver)
   time.sleep(2)
@@ -41,7 +43,8 @@ def main(driver, base_url, location):
     try:
       banner_text = driver.find_element_by_id('confirmation-message-text').text
       if (banner_text == 'the class you requested is full! join the waitlist'):
-        print(location + ' at ' + link_to_visit.date_string + ' is full')
+        with csv_writer_lock:
+          csv_writer.writerow([datetime.datetime.now(), location, link_to_visit.date_string, '', '', 'true'])
         continue
     except NoSuchElementException:
       pass
@@ -51,7 +54,8 @@ def main(driver, base_url, location):
       driver.find_element_by_class_name('location').text #todo should probs just regex the driver.current_url
       open_seats = len(driver.find_elements_by_css_selector('div.seat.open'))
       taken_seats = len(driver.find_elements_by_css_selector('div.seat.taken'))
-      print(location + ' at ' + link_to_visit.date_string + " has " + str(open_seats) + " open and " + str(taken_seats) + " taken.")
+      with csv_writer_lock:
+        csv_writer.writerow([datetime.datetime.now(), location, link_to_visit.date_string, str(open_seats), str(taken_seats), 'false'])
     except NoSuchElementException:
       pass
 
@@ -67,9 +71,9 @@ def login(driver):
 
   driver.find_element_by_name("submit").click()
 
-def do_work(driver, base_url, location):
+def do_work(driver, base_url, location, csv_writer):
   try:
-    main(driver, base_url, location)
+    main(driver, base_url, location, csv_writer)
   finally:
     driver.close()
 
@@ -80,10 +84,16 @@ DC_studio_ids = {
   'West End': '1013'
 } 
 
-for studio in DC_studio_ids:
-  options = webdriver.ChromeOptions()
-  options.add_argument('headless')
-  driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=options)
-  driver.implicitly_wait(2)
-  t = threading.Thread(target=do_work, args=(driver, STUDIO_BASE_URL + DC_studio_ids.get(studio), studio,))
-  t.start()
+with open(time.strftime('%Y%m%d-%H%M%S') + '.csv', 'w') as csvfile:
+  csv_writer = csv.writer(csvfile)
+  csv_writer.writerow(['time', 'location', 'class time', 'open seats', 'taken seats', 'is full'])
+  threads = []
+  for studio in DC_studio_ids:
+    options = webdriver.ChromeOptions()
+    options.add_argument('headless')
+    driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=options)
+    driver.implicitly_wait(2)
+    t = threading.Thread(target=do_work, args=(driver, STUDIO_BASE_URL + DC_studio_ids.get(studio), studio, csv_writer,))
+    t.start()
+    threads.append(t)
+  [t.join() for t in threads] #await all threads to keep the file open
