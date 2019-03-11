@@ -84,9 +84,8 @@ DC_studio_ids = {
   'West End': '1013'
 } 
 
-with open(time.strftime('%Y%m%d-%H%M%S') + '.csv', 'w') as csvfile:
+with open('classes.csv', 'a') as csvfile:
   csv_writer = csv.writer(csvfile)
-  csv_writer.writerow(['time', 'location', 'class time', 'open seats', 'taken seats', 'is full'])
   threads = []
   for studio in DC_studio_ids:
     options = webdriver.ChromeOptions()
