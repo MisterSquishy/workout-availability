@@ -3,7 +3,6 @@ import threading
 import dateutil.parser
 import datetime
 from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import NoSuchElementException
 from bs4 import BeautifulSoup, SoupStrainer
 from collections import deque
@@ -88,9 +87,7 @@ with open('classes.csv', 'a') as csvfile:
   csv_writer = csv.writer(csvfile)
   threads = []
   for studio in DC_studio_ids:
-    options = webdriver.ChromeOptions()
-    options.add_argument('headless')
-    driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=options)
+    driver = webdriver.Firefox()
     driver.implicitly_wait(2)
     t = threading.Thread(target=do_work, args=(driver, STUDIO_BASE_URL + DC_studio_ids.get(studio), studio, csv_writer,))
     t.start()
