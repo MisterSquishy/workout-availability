@@ -1,3 +1,4 @@
+import os
 import csv
 from enum import Enum
 
@@ -13,7 +14,7 @@ IS_FULL = 'is_full'
 TOTAL_SLOTS = 'total_slots'
 
 summary = {}
-with open('classes.csv', 'r') as csvfile:
+with open(os.getcwd() + '/classes.csv', 'r') as csvfile:
     for row in reversed(list(csv.reader(csvfile))):
         if not row: continue
         location_summary = summary.setdefault(row[Column.location.value], {})
