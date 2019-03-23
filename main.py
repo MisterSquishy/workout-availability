@@ -1,6 +1,5 @@
 import os
 import time
-import threading
 import dateutil.parser
 import datetime
 from selenium import webdriver
@@ -14,7 +13,6 @@ chrome_bin = os.environ['GOOGLE_CHROME_SHIM']
 
 STUDIO_BASE_URL = 'https://www.soul-cycle.com/find-a-class/studio/'
 links_to_visit = deque([])
-csv_writer_lock = threading.Lock()
 
 class Link:
   def __init__(self, url, date_string):
@@ -46,8 +44,7 @@ def main(driver, base_url, location, csv_writer):
     try:
       banner_text = driver.find_element_by_id('confirmation-message-text').text
       if (banner_text == 'the class you requested is full! join the waitlist'):
-        with csv_writer_lock:
-          csv_writer.writerow([datetime.datetime.now(), location, link_to_visit.date_string, '', '', 'true'])
+        csv_writer.writerow([datetime.datetime.now(), location, link_to_visit.date_string, '', '', 'true'])
         continue
     except NoSuchElementException:
       pass
@@ -57,8 +54,7 @@ def main(driver, base_url, location, csv_writer):
       driver.find_element_by_class_name('location').text #todo should probs just regex the driver.current_url
       open_seats = len(driver.find_elements_by_css_selector('div.seat.open'))
       taken_seats = len(driver.find_elements_by_css_selector('div.seat.taken'))
-      with csv_writer_lock:
-        csv_writer.writerow([datetime.datetime.now(), location, link_to_visit.date_string, str(open_seats), str(taken_seats), 'false'])
+      csv_writer.writerow([datetime.datetime.now(), location, link_to_visit.date_string, str(open_seats), str(taken_seats), 'false'])
     except NoSuchElementException:
       pass
 
@@ -89,7 +85,6 @@ DC_studio_ids = {
 
 with open('classes.csv', 'a') as csvfile:
   csv_writer = csv.writer(csvfile)
-  threads = []
   for studio in DC_studio_ids:
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
@@ -97,8 +92,5 @@ with open('classes.csv', 'a') as csvfile:
     options.add_argument("--disable-dev-shm-usage")
     options.binary_location=chrome_bin
     driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=options)
-    driver.implicitly_wait(2)
-    t = threading.Thread(target=do_work, args=(driver, STUDIO_BASE_URL + DC_studio_ids.get(studio), studio, csv_writer,))
-    t.start()
-    threads.append(t)
-  [t.join() for t in threads] #await all threads to keep the file open
+    driver.implicitly_wait(5)
+    do_work(driver, STUDIO_BASE_URL + DC_studio_ids.get(studio), studio, csv_writer,)
