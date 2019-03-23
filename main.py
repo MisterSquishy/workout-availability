@@ -90,6 +90,8 @@ with open('classes.csv', 'a') as csvfile:
   for studio in DC_studio_ids:
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
+    options.add_argument("--no-sandbox")
+    options.binary_location='/app/.chromedriver/bin/chromedriver'
     driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=options)
     driver.implicitly_wait(2)
     t = threading.Thread(target=do_work, args=(driver, STUDIO_BASE_URL + DC_studio_ids.get(studio), studio, csv_writer,))
