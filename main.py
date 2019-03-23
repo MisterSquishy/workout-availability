@@ -22,7 +22,7 @@ class Link:
     self.date_string = date_string
 
 def main(driver, base_url, location, csv_writer):
-  driver.set_page_load_timeout(10)
+  driver.set_page_load_timeout(60)
   login(driver)
   time.sleep(2)
 
