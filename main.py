@@ -1,3 +1,4 @@
+import os
 import time
 import threading
 import dateutil.parser
@@ -8,6 +9,8 @@ from selenium.common.exceptions import NoSuchElementException
 from bs4 import BeautifulSoup, SoupStrainer
 from collections import deque
 import csv
+
+chrome_bin = os.environ['GOOGLE_CHROME_SHIM']
 
 STUDIO_BASE_URL = 'https://www.soul-cycle.com/find-a-class/studio/'
 links_to_visit = deque([])
@@ -92,7 +95,7 @@ with open('classes.csv', 'a') as csvfile:
     options.add_argument('headless')
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    options.binary_location='/app/.chromedriver/bin/chromedriver'
+    options.binary_location=chrome_bin
     driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=options)
     driver.implicitly_wait(2)
     t = threading.Thread(target=do_work, args=(driver, STUDIO_BASE_URL + DC_studio_ids.get(studio), studio, csv_writer,))
