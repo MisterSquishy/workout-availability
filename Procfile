@@ -1,2 +1,2 @@
 cd webapp
-web: gunicorn webapp:app
+web: gunicorn webapp.wsgi:application
