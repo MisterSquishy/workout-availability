@@ -18,7 +18,7 @@ with open(os.getcwd() + '/classes.csv', 'a') as csvfile:
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
             options.binary_location=chrome_bin
-            driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=options)
+            driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
             driver.implicitly_wait(5)
             driver.set_page_load_timeout(60)
             venue.check(driver, csv_writer)
