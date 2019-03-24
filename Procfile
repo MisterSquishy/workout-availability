@@ -1,2 +1,1 @@
-cd webapp
-web: waitress-serve wsgi:application
+web: waitress-serve webapp:app
