@@ -1,2 +1,2 @@
 cd webapp
-web: waitress-serve --port=$PORT webapp:application
+web: waitress-serve wsgi:application
