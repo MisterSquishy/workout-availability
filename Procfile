@@ -1,2 +1,1 @@
-cd webapp
-web: gunicorn webapp:wsgi
+web: waitress-serve --port=$PORT webapp.wsgi:application
