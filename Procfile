@@ -1,1 +1,1 @@
-web: waitress-serve webapp:app
+web: waitress-serve webapp.wsgi
