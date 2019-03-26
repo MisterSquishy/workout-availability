@@ -3,6 +3,7 @@ import dateutil.parser
 import datetime
 from selenium.common.exceptions import NoSuchElementException
 from collections import deque
+from models import Check
 
 NAME = 'SoulCycle'
 
@@ -63,6 +64,7 @@ def crawl(driver, links_to_visit, location, csv_writer):
     try:
       banner_text = driver.find_element_by_id('confirmation-message-text').text
       if (banner_text == 'the class you requested is full! join the waitlist'):
+        Check.objects.create(venue=NAME, location=location, slot_time=link_to_visit.date_string, is_full=True)
         csv_writer.writerow([datetime.datetime.now(), location, link_to_visit.date_string, '', '', 'true']) #TODO RMEMEBER TO USE NAME ("SoulCycle") IN PK
         continue
     except NoSuchElementException:
@@ -73,6 +75,7 @@ def crawl(driver, links_to_visit, location, csv_writer):
       driver.find_element_by_class_name('location').text #todo should probs just regex the driver.current_url
       open_seats = len(driver.find_elements_by_css_selector('div.seat.open'))
       taken_seats = len(driver.find_elements_by_css_selector('div.seat.taken'))
+      Check.objects.create(venue=NAME, location=location, slot_time=link_to_visit.date_string, open_seats = open_seats, taken_seats = taken_seats)
       csv_writer.writerow([datetime.datetime.now(), location, link_to_visit.date_string, str(open_seats), str(taken_seats), 'false']) #TODO RMEMEBER TO USE NAME ("SoulCycle") IN PK
     except NoSuchElementException:
       pass
