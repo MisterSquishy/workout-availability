@@ -3,7 +3,7 @@ import dateutil.parser
 import datetime
 from selenium.common.exceptions import NoSuchElementException
 from collections import deque
-from models import Check
+from checks.models import Check
 
 NAME = 'SoulCycle'
 
