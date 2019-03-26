@@ -24,3 +24,6 @@ class Command(BaseCommand):
                 except Exception as e:
                     print("I done messed up on " + venue.NAME)
                     print(e)
+                finally:
+                    driver.close()
+        driver.quit()
