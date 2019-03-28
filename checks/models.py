@@ -2,8 +2,8 @@ from django.db import models
 
 # Create your models here.
 class Check(models.Model):
-    venue = models.CharField(max_length=255)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    venue = models.CharField(max_length=255, db_index=True)
+    timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
     location = models.CharField(max_length=255)
     slot_time = models.DateTimeField()
     open_seats = models.IntegerField(default=-1)
