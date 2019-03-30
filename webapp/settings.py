@@ -136,5 +136,6 @@ REST_FRAMEWORK = {
 
 CORS_ORIGIN_WHITELIST = (
     'localhost:3000',
-    'isthisseattaken.herokuapp.com'
+    'isthisseattaken.herokuapp.com',
+    '*.surge.sh'
 )
