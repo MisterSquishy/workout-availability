@@ -37,3 +37,16 @@ class ChecksView(viewsets.ModelViewSet):
     serializer_class = CheckSerializer
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filterset_fields = ('venue', 'location')
+
+    def get_queryset(self):
+        venue = self.request.query_params.get('venue')
+        location= self.request.query_params.get('location')
+
+        if (venue and location):
+            queryset = Check.objects.filter(venue=venue, location=location).order_by('-timestamp')
+        elif (venue):
+            queryset = Check.objects.filter(venue=venue).order_by('-timestamp')
+        else:
+            queryset = Check.objects.all().order_by('-timestamp')
+        
+        return queryset
