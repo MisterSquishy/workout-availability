@@ -17,7 +17,6 @@ from django.urls import include, path
 from rest_framework.authtoken import views as auth_views
 from rest_framework import routers
 from checks import views
-from django.views.decorators.csrf import csrf_exempt
 
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
@@ -27,6 +26,6 @@ router.register(r'checks', views.ChecksView)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('', include(router.urls)),
-    path('graphql/', csrf_exempt(views.PrivateGraphQLView.as_view(graphiql = True))),
+    path('graphql/', views.PrivateGraphQLView.as_view(graphiql = True)),
     path('login/', auth_views.obtain_auth_token)
 ]
