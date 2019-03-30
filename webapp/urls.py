@@ -18,7 +18,7 @@ from rest_framework.authtoken import views as auth_views
 from rest_framework import routers
 from checks import views
 
-router = routers.DefaultRouter()
+router = routers.SimpleRouter()
 router.register(r'users', views.UserViewSet)
 router.register(r'checks', views.ChecksView)
 
