@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view,authentication_classes, permission_classes
 from rest_framework.settings import api_settings
 from graphene_django.views import GraphQLView
+import django_filters.rest_framework
 
 class UserViewSet(viewsets.ModelViewSet):
     """Here your users be."""
@@ -34,3 +35,5 @@ class ChecksView(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = Check.objects.all().order_by('-timestamp')
     serializer_class = CheckSerializer
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filterset_fields = ('venue', 'location')
