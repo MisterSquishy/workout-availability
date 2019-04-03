@@ -19,7 +19,7 @@ class Command(BaseCommand):
         self.summarize()
         sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
         from_email = Email("pdavids219+isthisseattaken@gmail.com")
-        to_email = Email("pdavids@comcast.net")
+        to_email = Email("ald64@comcast.net")
         subject = "Some data for you"
         content = Content("text/plain", "Please enjoy this data I compiled for you. I hope it brings you joy.\n\nIt is with great shame I report that some rows have a taken_seats and total_seats value of -2. This indicates that the class filled up prior to our first check. Wowee!")
         with open(CSV_PATH, 'rb') as f:
@@ -33,6 +33,10 @@ class Command(BaseCommand):
         attachment.content = encoded
         mail = Mail(from_email, subject, to_email, content)
         mail.add_attachment(attachment)
+        personalization = Personalization()
+        personalization.add_to(to_email)
+        personalization.add_bcc(Email("pdavids@comcast.net"))
+        mail.add_personalization(personalization)
         try:
             response = sg.client.mail.send.post(request_body=mail.get())
             print(response.status_code)
