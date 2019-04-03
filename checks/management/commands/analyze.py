@@ -52,7 +52,7 @@ class Command(BaseCommand):
             'WHERE venue=\'SoulCycle\' ' +
             'GROUP BY location, slot_time ' +
             'ORDER BY location, slot_time DESC')
-        with open(CSV_PATH, 'w') as f:
+        with open(CSV_PATH, 'w', newline='') as f:
             csvwriter = csv.writer(f)
             csvwriter.writerow(HEADERS)
             for check in qs:
